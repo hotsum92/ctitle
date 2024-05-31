@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function htmlUnEscape () {
+  local s
+  s=$(cat -)
+  s=${s//&amp;/&}
+  s=${s//&lt;/<}
+  s=${s//&gt;/>}
+  s=${s//&quot;/'"'}
+  echo $s
+}
+
+function parseTitle() {
+  cat - | grep '<title>' | sed -e 's/<title>//' -e 's/<\/title>//'
+}
+
+if [ -z "$1" ]; then
+  for url in $(cat -); do
+    curl -s $url | parseTitle | htmlUnEscape
+  done
+else
+  for url in $@; do
+    curl -s $url | parseTitle | htmlUnEscape
+  done
+fi
+
